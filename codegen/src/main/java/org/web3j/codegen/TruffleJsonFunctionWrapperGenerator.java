@@ -63,7 +63,6 @@ public class TruffleJsonFunctionWrapperGenerator extends FunctionWrapperGenerato
             String destinationDirLocation,
             String basePackageName,
             boolean useJavaNativeTypes) {
-
         super(new File(destinationDirLocation), basePackageName, useJavaNativeTypes);
         this.jsonFileLocation = jsonFileLocation;
     }
@@ -77,7 +76,6 @@ public class TruffleJsonFunctionWrapperGenerator extends FunctionWrapperGenerato
     }
 
     public static void main(String[] args) throws Exception {
-
         String[] fullArgs;
         if (args.length == 5) {
             fullArgs = new String[args.length + 1];

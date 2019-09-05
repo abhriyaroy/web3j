@@ -40,6 +40,8 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +62,7 @@ import org.web3j.abi.datatypes.primitive.Int;
 import org.web3j.abi.datatypes.primitive.Long;
 import org.web3j.abi.datatypes.primitive.Short;
 import org.web3j.crypto.Credentials;
+import org.web3j.crypto.RawTransaction;
 import org.web3j.protocol.ObjectMapperFactory;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
@@ -1056,6 +1059,19 @@ public class SolidityFunctionWrapper extends Generator {
         return ParameterizedTypeName.get(ClassName.get(RemoteFunctionCall.class), typeName);
     }
 
+    private static ParameterizedTypeName buildSingleReturn(TypeName typeName){
+        return ParameterizedTypeName.get(ClassName.get(Single.class), typeName);
+    }
+
+
+    /**
+     * Customize this function for Matic's use case
+     *
+     * @param functionDefinition
+     * @param methodBuilder
+     * @param inputParams
+     * @throws ClassNotFoundException
+     */
     private void buildTransactionFunction(
             AbiDefinition functionDefinition, MethodSpec.Builder methodBuilder, String inputParams)
             throws ClassNotFoundException {
@@ -1071,10 +1087,15 @@ public class SolidityFunctionWrapper extends Generator {
         if (functionDefinition.isPayable()) {
             methodBuilder.addParameter(BigInteger.class, WEI_VALUE);
         }
-
         String functionName = functionDefinition.getName();
 
-        methodBuilder.returns(buildRemoteFunctionCall(TypeName.get(TransactionReceipt.class)));
+        if (functionDefinition.isPayable()){
+            methodBuilder.returns(buildRemoteCall(TypeName.get(TransactionReceipt.class)));
+        } else {
+            methodBuilder.returns(buildSingleReturn(TypeName.get(RawTransaction.class)));
+        }
+
+
 
         methodBuilder.addStatement(
                 "final $T function = new $T(\n$N, \n$T.<$T>asList($L), \n$T"
@@ -1091,7 +1112,7 @@ public class SolidityFunctionWrapper extends Generator {
             methodBuilder.addStatement(
                     "return executeRemoteCallTransaction(function, $N)", WEI_VALUE);
         } else {
-            methodBuilder.addStatement("return executeRemoteCallTransaction(function)");
+            methodBuilder.addStatement("return executeRawTransaction(function)");
         }
     }
 

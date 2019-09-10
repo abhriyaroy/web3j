@@ -14,6 +14,7 @@ package org.web3j.codegen;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,7 +81,9 @@ import org.web3j.utils.Collection;
 import org.web3j.utils.Strings;
 import org.web3j.utils.Version;
 
-/** Generate Java Classes based on generated Solidity bin and abi files. */
+/**
+ * Generate Java Classes based on generated Solidity bin and abi files.
+ */
 public class SolidityFunctionWrapper extends Generator {
 
     private static final String BINARY = "BINARY";
@@ -223,11 +226,11 @@ public class SolidityFunctionWrapper extends Generator {
             TypeName mapStringString = ParameterizedTypeName.get(mapType, stringType, stringType);
             FieldSpec addressesStaticField =
                     FieldSpec.builder(
-                                    mapStringString,
-                                    "_addresses",
-                                    Modifier.PROTECTED,
-                                    Modifier.STATIC,
-                                    Modifier.FINAL)
+                            mapStringString,
+                            "_addresses",
+                            Modifier.PROTECTED,
+                            Modifier.STATIC,
+                            Modifier.FINAL)
                             .build();
             classBuilder.addField(addressesStaticField);
 
@@ -429,11 +432,11 @@ public class SolidityFunctionWrapper extends Generator {
                 if (!fieldNames.contains(funcName)) {
                     FieldSpec field =
                             FieldSpec.builder(
-                                            String.class,
-                                            funcNameToConst(funcName),
-                                            Modifier.PUBLIC,
-                                            Modifier.STATIC,
-                                            Modifier.FINAL)
+                                    String.class,
+                                    funcNameToConst(funcName),
+                                    Modifier.PUBLIC,
+                                    Modifier.STATIC,
+                                    Modifier.FINAL)
                                     .initializer("$S", funcName)
                                     .build();
                     fields.add(field);
@@ -864,7 +867,7 @@ public class SolidityFunctionWrapper extends Generator {
      * a struct type.
      *
      * @param name parameter name
-     * @param idx parameter index
+     * @param idx  parameter index
      * @return non-empty parameter name
      */
     static String createValidParamName(String name, int idx) {
@@ -1008,7 +1011,7 @@ public class SolidityFunctionWrapper extends Generator {
                                                     .addAnnotation(Override.class)
                                                     .addAnnotation(
                                                             AnnotationSpec.builder(
-                                                                            SuppressWarnings.class)
+                                                                    SuppressWarnings.class)
                                                                     .addMember(
                                                                             "value",
                                                                             "$S",
@@ -1059,7 +1062,7 @@ public class SolidityFunctionWrapper extends Generator {
         return ParameterizedTypeName.get(ClassName.get(RemoteFunctionCall.class), typeName);
     }
 
-    private static ParameterizedTypeName buildSingleReturn(TypeName typeName){
+    private static ParameterizedTypeName buildSingleReturn(TypeName typeName) {
         return ParameterizedTypeName.get(ClassName.get(Single.class), typeName);
     }
 
@@ -1089,12 +1092,11 @@ public class SolidityFunctionWrapper extends Generator {
         }
         String functionName = functionDefinition.getName();
 
-        if (functionDefinition.isPayable()){
+        if (functionDefinition.isPayable()) {
             methodBuilder.returns(buildRemoteCall(TypeName.get(TransactionReceipt.class)));
         } else {
             methodBuilder.returns(buildSingleReturn(TypeName.get(RawTransaction.class)));
         }
-
 
 
         methodBuilder.addStatement(
@@ -1112,7 +1114,7 @@ public class SolidityFunctionWrapper extends Generator {
             methodBuilder.addStatement(
                     "return executeRemoteCallTransaction(function, $N)", WEI_VALUE);
         } else {
-            methodBuilder.addStatement("return executeRawTransaction(function)");
+            methodBuilder.addStatement("return createRawTransaction(function)");
         }
     }
 

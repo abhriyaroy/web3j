@@ -56,8 +56,8 @@ public abstract class Contract extends ManagedTransaction {
 
     // https://www.reddit.com/r/ethereum/comments/5g8ia6/attention_miners_we_recommend_raising_gas_limit/
     /**
-     * @deprecated ...
      * @see org.web3j.tx.gas.DefaultGasProvider
+     * @deprecated ...
      */
     public static final BigInteger GAS_LIMIT = BigInteger.valueOf(4_300_000);
 
@@ -348,10 +348,10 @@ public abstract class Contract extends ManagedTransaction {
     /**
      * Given the duration required to execute a transaction.
      *
-     * @param data to send in transaction
+     * @param data     to send in transaction
      * @param weiValue in Wei to send in transaction
      * @return {@link Optional} containing our transaction receipt
-     * @throws IOException if the call to the node fails
+     * @throws IOException          if the call to the node fails
      * @throws TransactionException if the transaction was not mined while waiting
      */
     TransactionReceipt executeTransaction(
@@ -764,7 +764,9 @@ public abstract class Contract extends ManagedTransaction {
         return addr == null ? getStaticDeployedAddress(networkId) : addr;
     }
 
-    /** Adds a log field to {@link EventValues}. */
+    /**
+     * Adds a log field to {@link EventValues}.
+     */
     public static class EventValuesWithLog {
         private final EventValues eventValues;
         private final Log log;
